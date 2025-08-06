@@ -11,11 +11,8 @@ export default function Header({ repositoryUrl = "https://github.com/your-repo" 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navigationItems = [
-    { label: "Platform", href: "#platform" },
-    { label: "Audience", href: "#audience" },
-    { label: "Resources", href: "#resources" },
     { label: "Use cases", href: "#use-cases", active: true },
-    { label: "Pricing", href: "#pricing" },
+    { label: "Favourites", href: "#favourites" },
   ];
 
   return (
