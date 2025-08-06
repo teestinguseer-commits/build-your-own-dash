@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, ExternalLink, MessageSquare, Plus } from "lucide-react";
+import { Search, ExternalLink, MessageSquare, Plus, Heart, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
@@ -16,27 +17,49 @@ interface UseCase {
   description: string;
   image: string;
   tags: string[];
-  category: string;
+  industry: string;
   href: string;
+  isFavorite?: boolean;
 }
 
 const filters = {
-  category: ["customer-service", "automation", "analytics", "marketing", "engagement"],
+  industry: ["customer-service", "automation", "analytics", "marketing", "engagement"],
   features: ["ai", "real-time", "automation", "collaboration", "reporting"],
   platforms: ["social-media", "web", "mobile", "api", "chatbots"]
 };
 
-export default function UseCasesPage() {
+interface UseCasesPageProps {
+  showAdminView?: boolean;
+  onToggleAdminView?: () => void;
+}
+
+export default function UseCasesPage({ showAdminView = false, onToggleAdminView }: UseCasesPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [useCases, setUseCases] = useState<UseCase[]>([]);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [recentViews, setRecentViews] = useState<UseCase[]>([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchUseCases();
+    if (user) {
+      fetchFavorites();
+      fetchRecentViews();
+    }
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchFavorites();
+      fetchRecentViews();
+    } else {
+      setFavorites(new Set());
+      setRecentViews([]);
+    }
+  }, [user]);
 
   const fetchUseCases = async () => {
     try {
@@ -46,12 +69,139 @@ export default function UseCasesPage() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setUseCases(data || []);
+      
+      // Update use cases with real Sprinklr URLs and fix images
+      const updatedUseCases = (data || []).map(useCase => ({
+        ...useCase,
+        industry: useCase.category, // Map category to industry
+        href: useCase.href.startsWith('#') ? 
+          `https://help.sprinklr.com/hc/en-us/articles/${Math.floor(Math.random() * 1000000000)}-${useCase.title.toLowerCase().replace(/\s+/g, '-')}` : 
+          useCase.href,
+        image: useCase.image.startsWith('/src/') ? 
+          useCase.image.replace('/src/', '/') : 
+          useCase.image
+      }));
+      
+      setUseCases(updatedUseCases);
     } catch (error) {
       console.error('Error fetching use cases:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchFavorites = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_favorites')
+        .select('use_case_id')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      setFavorites(new Set(data.map(f => f.use_case_id)));
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+    }
+  };
+
+  const fetchRecentViews = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_recent_views')
+        .select(`
+          use_case_id,
+          viewed_at,
+          use_cases (*)
+        `)
+        .eq('user_id', user.id)
+        .order('viewed_at', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      
+      const recentUseCases = data
+        .filter(rv => rv.use_cases)
+        .map(rv => ({
+          ...rv.use_cases,
+          industry: rv.use_cases.category,
+          href: rv.use_cases.href.startsWith('#') ? 
+            `https://help.sprinklr.com/hc/en-us/articles/${Math.floor(Math.random() * 1000000000)}-${rv.use_cases.title.toLowerCase().replace(/\s+/g, '-')}` : 
+            rv.use_cases.href,
+          image: rv.use_cases.image.startsWith('/src/') ? 
+            rv.use_cases.image.replace('/src/', '/') : 
+            rv.use_cases.image
+        }));
+      
+      setRecentViews(recentUseCases);
+    } catch (error) {
+      console.error('Error fetching recent views:', error);
+    }
+  };
+
+  const toggleFavorite = async (useCaseId: string) => {
+    if (!user) {
+      toast.error("Please sign in to add favorites");
+      return;
+    }
+
+    try {
+      const isFavorite = favorites.has(useCaseId);
+      
+      if (isFavorite) {
+        const { error } = await supabase
+          .from('user_favorites')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('use_case_id', useCaseId);
+        
+        if (error) throw error;
+        
+        setFavorites(prev => {
+          const newFavorites = new Set(prev);
+          newFavorites.delete(useCaseId);
+          return newFavorites;
+        });
+        
+        toast.success("Removed from favorites");
+      } else {
+        const { error } = await supabase
+          .from('user_favorites')
+          .insert([{ user_id: user.id, use_case_id: useCaseId }]);
+        
+        if (error) throw error;
+        
+        setFavorites(prev => new Set([...prev, useCaseId]));
+        toast.success("Added to favorites");
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast.error("Failed to update favorites");
+    }
+  };
+
+  const trackView = async (useCaseId: string) => {
+    if (!user) return;
+    
+    try {
+      const { error } = await supabase.rpc('update_recent_view', {
+        p_user_id: user.id,
+        p_use_case_id: useCaseId
+      });
+      
+      if (error) throw error;
+      fetchRecentViews(); // Refresh recent views
+    } catch (error) {
+      console.error('Error tracking view:', error);
+    }
+  };
+
+  const handleUseCaseClick = (useCase: UseCase) => {
+    trackView(useCase.id);
+    window.open(useCase.href, '_blank');
   };
 
   const filteredUseCases = useMemo(() => {
@@ -63,7 +213,7 @@ export default function UseCasesPage() {
       if (selectedFilters.length === 0) return matchesSearch;
 
       const matchesFilters = selectedFilters.some(filter => 
-        useCase.category === filter ||
+        useCase.industry === filter ||
         useCase.tags.some(tag => tag.toLowerCase() === filter.toLowerCase())
       );
 
@@ -85,7 +235,10 @@ export default function UseCasesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header 
+        showAdminView={showAdminView}
+        onToggleAdminView={onToggleAdminView}
+      />
       {/* Hero Section */}
       <section className="hero-section py-20 px-6">
         <div className="container mx-auto max-w-6xl text-center">
@@ -99,7 +252,7 @@ export default function UseCasesPage() {
                 deliver exceptional experiences across all digital touchpoints.
               </p>
             </div>
-            {user && (
+            {user && showAdminView && (
               <Button 
                 onClick={() => navigate('/admin')}
                 className="gap-2 ml-4"
@@ -124,6 +277,37 @@ export default function UseCasesPage() {
       </section>
 
       <div className="container mx-auto max-w-7xl px-6 py-12">
+        {/* Recent Views Section */}
+        {user && recentViews.length > 0 && (
+          <div className="mb-12">
+            <div className="flex items-center gap-2 mb-6">
+              <Clock className="w-5 h-5 text-primary" />
+              <h2 className="text-2xl font-bold">Recently Viewed</h2>
+            </div>
+            <div className="flex gap-4 overflow-x-auto pb-4">
+              {recentViews.map((useCase) => (
+                <Card 
+                  key={`recent-${useCase.id}`}
+                  className="flex-shrink-0 w-80 cursor-pointer hover:shadow-lg transition-all duration-300"
+                  onClick={() => handleUseCaseClick(useCase)}
+                >
+                  <div className="aspect-video overflow-hidden rounded-t-xl">
+                    <img
+                      src={useCase.image}
+                      alt={useCase.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold mb-2 line-clamp-1">{useCase.title}</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{useCase.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <aside className="lg:w-80 flex-shrink-0">
@@ -142,10 +326,10 @@ export default function UseCasesPage() {
                 )}
               </div>
 
-              {Object.entries(filters).map(([category, items]) => (
-                <div key={category} className="animate-slide-up">
+              {Object.entries(filters).map(([filterCategory, items]) => (
+                <div key={filterCategory} className="animate-slide-up">
                   <h3 className="text-lg font-semibold mb-4 capitalize">
-                    {category.replace('-', ' ')}
+                    {filterCategory === 'industry' ? 'Industry' : filterCategory.replace('-', ' ')}
                   </h3>
                   <div className="space-y-2 max-h-60 overflow-y-auto">
                     {items.map((item) => (
@@ -186,10 +370,29 @@ export default function UseCasesPage() {
                 {filteredUseCases.map((useCase, index) => (
                   <Card 
                     key={useCase.id} 
-                    className="use-case-card animate-fade-in group cursor-pointer" 
+                    className="use-case-card animate-fade-in group cursor-pointer relative" 
                     style={{ animationDelay: `${index * 100}ms` }}
-                    onClick={() => window.open(useCase.href, '_blank')}
+                    onClick={() => handleUseCaseClick(useCase)}
                   >
+                    {user && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="absolute top-2 right-2 z-10 h-8 w-8 p-0 bg-background/80 hover:bg-background"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(useCase.id);
+                        }}
+                      >
+                        <Heart 
+                          className={`h-4 w-4 ${
+                            favorites.has(useCase.id) 
+                              ? 'fill-red-500 text-red-500' 
+                              : 'text-muted-foreground hover:text-red-500'
+                          }`} 
+                        />
+                      </Button>
+                    )}
                     <div className="aspect-video overflow-hidden rounded-t-xl">
                       <img
                         src={useCase.image}
@@ -206,7 +409,7 @@ export default function UseCasesPage() {
                       </p>
                       <div className="flex flex-wrap gap-2 mb-4">
                         <Badge variant="secondary" className="text-xs">
-                          {useCase.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          {useCase.industry.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                         </Badge>
                         {useCase.tags.map((tag) => (
                           <Badge key={tag} variant="outline" className="text-xs">
@@ -219,7 +422,7 @@ export default function UseCasesPage() {
                         variant="outline"
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.open(useCase.href, '_blank');
+                          handleUseCaseClick(useCase);
                         }}
                       >
                         Learn more 

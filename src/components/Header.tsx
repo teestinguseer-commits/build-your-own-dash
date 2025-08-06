@@ -1,17 +1,25 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, ExternalLink } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Menu, X, ExternalLink, User, LogOut, Settings, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 
 interface HeaderProps {
   repositoryUrl?: string;
+  showAdminView?: boolean;
+  onToggleAdminView?: () => void;
 }
 
-export default function Header({ repositoryUrl = "https://github.com/your-repo" }: HeaderProps) {
+export default function Header({ 
+  repositoryUrl = "https://github.com/your-repo",
+  showAdminView = false,
+  onToggleAdminView
+}: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
   const navigationItems = [
@@ -19,6 +27,14 @@ export default function Header({ repositoryUrl = "https://github.com/your-repo" 
     { label: "Favourites", href: "#favourites" },
   ];
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const getUserInitials = (email: string) => {
+    return email.split('@')[0].substring(0, 2).toUpperCase();
+  };
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-6">
@@ -54,13 +70,40 @@ export default function Header({ repositoryUrl = "https://github.com/your-repo" 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigate('/admin')}
-              >
-                Admin
-              </Button>
+              <>
+                {onToggleAdminView && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={onToggleAdminView}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    {showAdminView ? 'User View' : 'Admin View'}
+                  </Button>
+                )}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="bg-primary text-primary-foreground">
+                          {getUserInitials(user.email || 'U')}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuItem onClick={() => navigate('/admin')}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Admin Panel</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             ) : (
               <Button 
                 variant="ghost" 
@@ -73,9 +116,6 @@ export default function Header({ repositoryUrl = "https://github.com/your-repo" 
             <Button size="sm" className="group">
               Book a demo
               <ExternalLink className="w-3 h-3 ml-2 transition-transform group-hover:translate-x-0.5" />
-            </Button>
-            <Button size="sm" variant="secondary">
-              Start for free
             </Button>
           </div>
 
@@ -115,17 +155,46 @@ export default function Header({ repositoryUrl = "https://github.com/your-repo" 
               ))}
               <div className="pt-4 space-y-2">
                 {user ? (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="w-full justify-start"
-                    onClick={() => {
-                      navigate('/admin');
-                      setIsMobileMenuOpen(false);
-                    }}
-                  >
-                    Admin
-                  </Button>
+                  <>
+                    {onToggleAdminView && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="w-full justify-start"
+                        onClick={() => {
+                          onToggleAdminView();
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        {showAdminView ? 'User View' : 'Admin View'}
+                      </Button>
+                    )}
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-full justify-start"
+                      onClick={() => {
+                        navigate('/admin');
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      <Settings className="w-4 h-4 mr-2" />
+                      Admin Panel
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="w-full justify-start"
+                      onClick={() => {
+                        handleSignOut();
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Log out
+                    </Button>
+                  </>
                 ) : (
                   <Button 
                     variant="ghost" 
@@ -142,9 +211,6 @@ export default function Header({ repositoryUrl = "https://github.com/your-repo" 
                 <Button size="sm" className="w-full group">
                   Book a demo
                   <ExternalLink className="w-3 h-3 ml-2 transition-transform group-hover:translate-x-0.5" />
-                </Button>
-                <Button size="sm" variant="secondary" className="w-full">
-                  Start for free
                 </Button>
               </div>
             </div>

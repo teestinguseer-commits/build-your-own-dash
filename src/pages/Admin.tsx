@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Plus, Edit, Trash2, LogOut } from 'lucide-react';
+import { Loader2, Plus, Edit, Trash2, LogOut, ArrowLeft, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface UseCase {
@@ -36,10 +36,10 @@ export default function Admin() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: '',
+    category: '', // Keep as category for database compatibility
     tags: '',
-    href: '#',
-    image: '/src/assets/support-preview.jpg'
+    href: 'https://help.sprinklr.com/hc/en-us',
+    image: '/assets/support-preview.jpg'
   });
 
   const categories = [
@@ -129,8 +129,8 @@ export default function Admin() {
         description: '',
         category: '',
         tags: '',
-        href: '#',
-        image: '/src/assets/support-preview.jpg'
+        href: 'https://help.sprinklr.com/hc/en-us',
+        image: '/assets/support-preview.jpg'
       });
       setEditingId(null);
       fetchUseCases();
@@ -200,10 +200,28 @@ export default function Admin() {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <Button onClick={handleSignOut} variant="outline">
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => navigate('/')} 
+              variant="outline"
+              className="gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Use Cases
+            </Button>
+            <Button 
+              onClick={() => navigate('/')} 
+              variant="outline"
+              className="gap-2"
+            >
+              <Eye className="w-4 h-4" />
+              Preview Site
+            </Button>
+            <Button onClick={handleSignOut} variant="outline">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -238,10 +256,10 @@ export default function Admin() {
                 </div>
 
                 <div>
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="category">Industry</Label>
                   <Select value={formData.category} onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
+                      <SelectValue placeholder="Select an industry" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map(category => (
@@ -269,6 +287,7 @@ export default function Admin() {
                     id="href"
                     value={formData.href}
                     onChange={(e) => setFormData(prev => ({ ...prev, href: e.target.value }))}
+                    placeholder="https://help.sprinklr.com/hc/en-us/articles/..."
                   />
                 </div>
 
@@ -278,6 +297,7 @@ export default function Admin() {
                     id="image"
                     value={formData.image}
                     onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
+                    placeholder="/assets/image-name.jpg"
                   />
                 </div>
 
@@ -297,8 +317,8 @@ export default function Admin() {
                           description: '',
                           category: '',
                           tags: '',
-                          href: '#',
-                          image: '/src/assets/support-preview.jpg'
+                          href: 'https://help.sprinklr.com/hc/en-us',
+                          image: '/assets/support-preview.jpg'
                         });
                       }}
                     >
