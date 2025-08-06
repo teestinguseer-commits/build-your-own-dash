@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Github, ExternalLink } from "lucide-react";
+import { Menu, X, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 interface HeaderProps {
   repositoryUrl?: string;
@@ -9,6 +11,8 @@ interface HeaderProps {
 
 export default function Header({ repositoryUrl = "https://github.com/your-repo" }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const navigationItems = [
     { label: "Use cases", href: "#use-cases", active: true },
@@ -49,19 +53,23 @@ export default function Header({ repositoryUrl = "https://github.com/your-repo" 
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => window.open(repositoryUrl, '_blank')}
-              className="group"
-            >
-              <Github className="w-4 h-4 mr-2" />
-              Repository
-              <ExternalLink className="w-3 h-3 ml-1 transition-transform group-hover:translate-x-0.5" />
-            </Button>
-            <Button variant="ghost" size="sm">
-              Sign in
-            </Button>
+            {user ? (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate('/admin')}
+              >
+                Admin
+              </Button>
+            ) : (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate('/auth')}
+              >
+                Sign in
+              </Button>
+            )}
             <Button size="sm" className="group">
               Book a demo
               <ExternalLink className="w-3 h-3 ml-2 transition-transform group-hover:translate-x-0.5" />
@@ -106,22 +114,31 @@ export default function Header({ repositoryUrl = "https://github.com/your-repo" 
                 </a>
               ))}
               <div className="pt-4 space-y-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full justify-start group"
-                  onClick={() => {
-                    window.open(repositoryUrl, '_blank');
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  <Github className="w-4 h-4 mr-2" />
-                  Repository
-                  <ExternalLink className="w-3 h-3 ml-1 transition-transform group-hover:translate-x-0.5" />
-                </Button>
-                <Button variant="ghost" size="sm" className="w-full justify-start">
-                  Sign in
-                </Button>
+                {user ? (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      navigate('/admin');
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Admin
+                  </Button>
+                ) : (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      navigate('/auth');
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Sign in
+                  </Button>
+                )}
                 <Button size="sm" className="w-full group">
                   Book a demo
                   <ExternalLink className="w-3 h-3 ml-2 transition-transform group-hover:translate-x-0.5" />
