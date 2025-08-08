@@ -103,7 +103,7 @@ export default function Favourites() {
     if (!user) return;
     
     try {
-      await supabase.rpc('update_recent_view', {
+      await (supabase as any).rpc('update_recent_view', {
         p_user_id: user.id,
         p_use_case_id: useCaseId
       });
