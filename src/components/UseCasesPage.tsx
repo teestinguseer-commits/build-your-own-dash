@@ -77,9 +77,9 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
         href: useCase.href?.startsWith('#') ? 
           `https://help.sprinklr.com/hc/en-us/articles/${Math.floor(Math.random() * 1000000000)}-${useCase.title.toLowerCase().replace(/\s+/g, '-')}` : 
           useCase.href,
-        image: useCase.image
+        image: useCase.image && useCase.image !== '/placeholder.svg'
           ? (useCase.image.startsWith('/src/') ? useCase.image.replace('/src/', '/') : useCase.image)
-          : '/placeholder.svg'
+          : `/assets/${useCase.category || 'web-platform'}.jpg`
       }));
       
       setUseCases(updatedUseCases);
@@ -251,10 +251,10 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
         <div className="container mx-auto max-w-6xl text-center relative z-10">
           <div className="flex items-center justify-between mb-8">
             <div className="flex-1">
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground animate-fade-in">
-                Transform Customer Experience with <span className="gradient-text">Sprinklr</span>
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+                Transform Customer Experience with <span className="hero-gradient-text">Sprinklr</span>
               </h1>
-              <p className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-4xl mx-auto animate-fade-in delay-200">
+              <p className="text-xl md:text-2xl mb-8 max-w-4xl mx-auto animate-fade-in delay-200">
                 Discover powerful use cases and real-world solutions that help leading brands 
                 deliver unified, exceptional customer experiences at scale.
               </p>
@@ -320,8 +320,9 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
           {/* Sidebar Filters */}
           <aside className="lg:w-80 flex-shrink-0">
             <div className="sticky top-6 space-y-6">
-              <div className="glass-card p-6 rounded-xl">
-              <div className="flex items-center justify-between">
+              <div className="glass-card rounded-xl">
+              <div className="p-6 pb-4">
+                <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold gradient-text">Refine Your Search</h2>
                 {selectedFilters.length > 0 && (
                   <Button 
@@ -333,19 +334,21 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                     Clear all ({selectedFilters.length})
                   </Button>
                 )}
+                </div>
               </div>
 
-              {Object.entries(filters).map(([filterCategory, items]) => (
-                <div key={filterCategory} className="animate-slide-up">
+              <div className="sidebar-filters px-6 pb-6">
+                {Object.entries(filters).map(([filterCategory, items]) => (
+                <div key={filterCategory} className="filter-category animate-slide-up">
                   <h3 className="text-lg font-semibold mb-4 capitalize">
                     {filterCategory === 'industry' ? 'Industry' : filterCategory.replace('-', ' ')}
                   </h3>
-                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                  <div className="filter-items">
                     {items.map((item) => (
                       <button
                         key={item}
                         onClick={() => toggleFilter(item)}
-                        className={`filter-button w-full text-left ${
+                        className={`filter-button w-full text-left text-sm ${
                           selectedFilters.includes(item) ? 'active' : ''
                         }`}
                       >
@@ -354,7 +357,8 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                     ))}
                   </div>
                 </div>
-              ))}
+                ))}
+              </div>
               </div>
             </div>
           </aside>

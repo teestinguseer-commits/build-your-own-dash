@@ -167,6 +167,7 @@ All colors MUST be HSL.
     box-shadow: var(--shadow-hero);
     position: relative;
     overflow: hidden;
+    color: white;
   }
   
   .hero-section::before {
@@ -191,6 +192,19 @@ All colors MUST be HSL.
     background: radial-gradient(circle, hsl(220 91% 58% / 0.1) 0%, transparent 70%);
     animation: float 20s ease-in-out infinite;
     pointer-events: none;
+  }
+  
+  .hero-section h1,
+  .hero-section p {
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .hero-section .gradient-text {
+    background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 50%, #c7d2fe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   
   @keyframes float {
@@ -250,8 +264,14 @@ All colors MUST be HSL.
     background: var(--gradient-cta);
     @apply hover:border-primary/50;
     @apply transition-all duration-500 ease-out;
-    @apply text-white;
+    color: white;
     box-shadow: var(--shadow-card);
+  }
+  
+  .cta-card h3,
+  .cta-card p {
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   }
   
   .cta-card:hover {
@@ -261,6 +281,13 @@ All colors MUST be HSL.
   
   .gradient-text {
     background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .hero-gradient-text {
+    background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 50%, #c7d2fe 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -295,5 +322,34 @@ All colors MUST be HSL.
   
   .glow-button:hover::before {
     left: 100%;
+  }
+  
+  .sidebar-filters {
+    @apply space-y-6;
+  }
+  
+  .filter-category {
+    @apply space-y-3;
+  }
+  
+  .filter-category h3 {
+    @apply text-base font-semibold text-foreground mb-3 pb-2 border-b border-border/30;
+  }
+  
+  .filter-items {
+    @apply space-y-2 max-h-48 overflow-y-auto;
+  }
+  
+  .filter-items::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .filter-items::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .filter-items::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 2px;
   }
 }

@@ -168,7 +168,7 @@ export default function Favourites() {
                 <h2 className="text-2xl font-semibold gradient-text">
                   Your Collection Awaits
                 </h2>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground leading-relaxed">
                   Discover powerful solutions and save the ones that inspire you. Build your personalized library of game-changing use cases.
                 </p>
               </div>
@@ -183,9 +183,9 @@ export default function Favourites() {
                   Discover Solutions
                 </Button>
                 
-                <div className="text-sm text-muted-foreground space-y-2">
+                <div className="text-sm text-muted-foreground/80 space-y-2 pt-2">
                   <p className="font-medium gradient-text">💡 Pro Tip:</p>
-                  <p>Curate your perfect collection of solutions to accelerate your next breakthrough project!</p>
+                  <p className="leading-relaxed">Curate your perfect collection of solutions to accelerate your next breakthrough project!</p>
                 </div>
               </div>
             </div>
