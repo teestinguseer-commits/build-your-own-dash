@@ -23,8 +23,8 @@ export default function Header({
   const navigate = useNavigate();
 
   const navigationItems = [
-    { label: "Use cases", href: "#use-cases", active: true },
-    { label: "Favourites", href: "#favourites" },
+    { label: "Use cases", path: "/", active: true },
+    { label: "Favourites", path: "/favourites" },
   ];
 
   const handleSignOut = async () => {
@@ -52,9 +52,9 @@ export default function Header({
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navigationItems.map((item) => (
-              <a
+              <button
                 key={item.label}
-                href={item.href}
+                onClick={() => navigate(item.path)}
                 className={cn(
                   "text-sm font-medium transition-colors hover:text-primary",
                   item.active 
@@ -63,7 +63,7 @@ export default function Header({
                 )}
               >
                 {item.label}
-              </a>
+              </button>
             ))}
           </nav>
 
@@ -139,19 +139,18 @@ export default function Header({
           <div className="md:hidden border-t">
             <div className="px-2 py-4 space-y-2">
               {navigationItems.map((item) => (
-                <a
+                <button
                   key={item.label}
-                  href={item.href}
                   className={cn(
-                    "block px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                    "block w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors",
                     item.active 
                       ? "bg-primary text-primary-foreground" 
                       : "text-muted-foreground hover:text-primary hover:bg-accent"
                   )}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => { navigate(item.path); setIsMobileMenuOpen(false); }}
                 >
                   {item.label}
-                </a>
+                </button>
               ))}
               <div className="pt-4 space-y-2">
                 {user ? (

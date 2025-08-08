@@ -17,9 +17,9 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 267 84% 64%;
+    --primary: 202 83% 53%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 267 100% 75%;
+    --primary-glow: 202 90% 60%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -27,20 +27,19 @@ All colors MUST be HSL.
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 267 84% 95%;
-    --accent-foreground: 267 84% 20%;
+    --accent: 202 83% 96%;
+    --accent-foreground: 202 83% 25%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 267 84% 64%;
+    --ring: 202 83% 53%;
 
-    /* Beautiful gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(267 84% 64%), hsl(267 100% 75%));
-    --gradient-subtle: linear-gradient(180deg, hsl(267 84% 98%), hsl(0 0% 100%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(267 84% 99%));
+    --gradient-hero: linear-gradient(135deg, hsl(202 83% 53%), hsl(202 90% 60%));
+    --gradient-subtle: linear-gradient(180deg, hsl(210 100% 98%), hsl(0 0% 100%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 100% 99%));
     
     /* Elegant shadows */
     --shadow-card: 0 4px 20px -2px hsl(267 84% 64% / 0.1);
@@ -80,9 +79,9 @@ All colors MUST be HSL.
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 267 100% 75%;
+    --primary: 202 90% 60%;
     --primary-foreground: 222.2 84% 4.9%;
-    --primary-glow: 267 84% 80%;
+    --primary-glow: 202 90% 65%;
 
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
@@ -98,12 +97,11 @@ All colors MUST be HSL.
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 267 100% 75%;
+    --ring: 202 90% 60%;
 
-    /* Dark mode gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(267 100% 75%), hsl(267 84% 80%));
+    --gradient-hero: linear-gradient(135deg, hsl(202 90% 60%), hsl(202 90% 65%));
     --gradient-subtle: linear-gradient(180deg, hsl(217.2 32.6% 17.5%), hsl(222.2 84% 4.9%));
-    --gradient-card: linear-gradient(145deg, hsl(217.2 32.6% 17.5%), hsl(267 40% 15%));
+    --gradient-card: linear-gradient(145deg, hsl(217.2 32.6% 17.5%), hsl(202 40% 15%));
     
     /* Dark shadows */
     --shadow-card: 0 4px 20px -2px hsl(0 0% 0% / 0.3);
@@ -123,6 +121,11 @@ All colors MUST be HSL.
 @layer base {
   * {
     @apply border-border;
+  }
+
+  html {
+    scrollbar-gutter: stable both-edges;
+    overflow-y: scroll;
   }
 
   body {

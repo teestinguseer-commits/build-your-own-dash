@@ -94,7 +94,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
     if (!user) return;
     
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_favorites')
         .select('use_case_id')
         .eq('user_id', user.id);
@@ -110,33 +110,40 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
     if (!user) return;
     
     try {
-      const { data, error } = await supabase
+      const { data: views, error } = await (supabase as any)
         .from('user_recent_views')
-        .select(`
-          use_case_id,
-          viewed_at,
-          use_cases (*)
-        `)
+        .select('use_case_id, viewed_at')
         .eq('user_id', user.id)
         .order('viewed_at', { ascending: false })
         .limit(5);
 
       if (error) throw error;
-      
-      const recentUseCases = data
-        .filter(rv => rv.use_cases)
-        .map(rv => ({
-          ...rv.use_cases,
-          industry: rv.use_cases.category,
-          href: rv.use_cases.href.startsWith('#') ? 
-            `https://help.sprinklr.com/hc/en-us/articles/${Math.floor(Math.random() * 1000000000)}-${rv.use_cases.title.toLowerCase().replace(/\s+/g, '-')}` : 
-            rv.use_cases.href,
-          image: rv.use_cases.image.startsWith('/src/') ? 
-            rv.use_cases.image.replace('/src/', '/') : 
-            rv.use_cases.image
+
+      const ids = (views || []).map((v: any) => v.use_case_id).filter(Boolean);
+      if (!ids.length) { setRecentViews([]); return; }
+
+      const { data: cases, error: ucError } = await supabase
+        .from('use_cases')
+        .select('*')
+        .in('id', ids);
+
+      if (ucError) throw ucError;
+
+      const byId = new Map((cases || []).map((c: any) => [c.id, c]));
+      const ordered = ids
+        .map((id: string) => byId.get(id))
+        .filter(Boolean)
+        .map((uc: any) => ({
+          ...uc,
+          industry: uc.category,
+          href: uc.href?.startsWith('#') ? 
+            `https://help.sprinklr.com/hc/en-us/articles/${Math.floor(Math.random() * 1000000000)}-${uc.title.toLowerCase().replace(/\s+/g, '-')}` : 
+            uc.href,
+          image: uc.image?.startsWith('/src/') ? 
+            uc.image.replace('/src/', '/') : 
+            uc.image
         }));
-      
-      setRecentViews(recentUseCases);
+      setRecentViews(ordered as any);
     } catch (error) {
       console.error('Error fetching recent views:', error);
     }
@@ -152,7 +159,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
       const isFavorite = favorites.has(useCaseId);
       
       if (isFavorite) {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('user_favorites')
           .delete()
           .eq('user_id', user.id)
@@ -168,7 +175,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
         
         toast.success("Removed from favorites");
       } else {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('user_favorites')
           .insert([{ user_id: user.id, use_case_id: useCaseId }]);
         
@@ -187,7 +194,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
     if (!user) return;
     
     try {
-      const { error } = await supabase.rpc('update_recent_view', {
+      const { error } = await (supabase as any).rpc('update_recent_view', {
         p_user_id: user.id,
         p_use_case_id: useCaseId
       });
@@ -244,10 +251,10 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
         <div className="container mx-auto max-w-6xl text-center">
           <div className="flex items-center justify-between mb-8">
             <div className="flex-1">
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white animate-fade-in">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground animate-fade-in">
                 Sprinklr Use Cases
               </h1>
-              <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-4xl mx-auto animate-fade-in delay-200">
+              <p className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-4xl mx-auto animate-fade-in delay-200">
                 Discover how Sprinklr's unified customer experience management platform helps brands 
                 deliver exceptional experiences across all digital touchpoints.
               </p>
@@ -288,7 +295,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
               {recentViews.map((useCase) => (
                 <Card 
                   key={`recent-${useCase.id}`}
-                  className="flex-shrink-0 w-80 cursor-pointer hover:shadow-lg transition-all duration-300"
+                  className="flex-shrink-0 w-80 cursor-pointer hover:shadow-lg transition-all duration-300 h-full flex flex-col"
                   onClick={() => handleUseCaseClick(useCase)}
                 >
                   <div className="aspect-video overflow-hidden rounded-t-xl">
@@ -298,7 +305,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <CardContent className="p-4">
+                  <CardContent className="p-4 flex flex-col h-full">
                     <h3 className="font-semibold mb-2 line-clamp-1">{useCase.title}</h3>
                     <p className="text-sm text-muted-foreground line-clamp-2">{useCase.description}</p>
                   </CardContent>
@@ -370,7 +377,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                 {filteredUseCases.map((useCase, index) => (
                   <Card 
                     key={useCase.id} 
-                    className="use-case-card animate-fade-in group cursor-pointer relative" 
+                    className="use-case-card animate-fade-in group cursor-pointer relative h-full flex flex-col" 
                     style={{ animationDelay: `${index * 100}ms` }}
                     onClick={() => handleUseCaseClick(useCase)}
                   >
@@ -400,7 +407,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     </div>
-                    <CardContent className="p-6">
+                    <CardContent className="p-6 flex flex-col h-full">
                       <h3 className="text-xl font-semibold mb-3 line-clamp-2">
                         {useCase.title}
                       </h3>
@@ -418,7 +425,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                         ))}
                       </div>
                       <Button 
-                        className="w-full group" 
+                        className="w-full group mt-auto" 
                         variant="outline"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -432,7 +439,6 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                   </Card>
                 ))}
 
-                {/* Custom CTA Card */}
                 <Card className="cta-card col-span-1 md:col-span-2 xl:col-span-3 animate-bounce-in delay-600">
                   <CardContent className="p-8 text-center">
                     <div className="mb-6">

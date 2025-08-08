@@ -37,31 +37,40 @@ export default function Favourites() {
     if (!user) return;
     
     try {
-      const { data, error } = await supabase
+      const { data: favRows, error } = await (supabase as any)
         .from('user_favorites')
-        .select(`
-          use_case_id,
-          use_cases (*)
-        `)
+        .select('use_case_id, created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      
-      const favoriteUseCases = data
-        .filter(f => f.use_cases)
-        .map(f => ({
-          ...f.use_cases,
-          industry: f.use_cases.category,
-          href: f.use_cases.href.startsWith('#') ? 
-            `https://help.sprinklr.com/hc/en-us/articles/${Math.floor(Math.random() * 1000000000)}-${f.use_cases.title.toLowerCase().replace(/\s+/g, '-')}` : 
-            f.use_cases.href,
-          image: f.use_cases.image.startsWith('/src/') ? 
-            f.use_cases.image.replace('/src/', '/') : 
-            f.use_cases.image
+
+      const ids = (favRows || []).map((r: any) => r.use_case_id).filter(Boolean);
+      if (!ids.length) { setFavorites([]); return; }
+
+      const { data: cases, error: ucError } = await supabase
+        .from('use_cases')
+        .select('*')
+        .in('id', ids);
+
+      if (ucError) throw ucError;
+
+      const byId = new Map((cases || []).map((c: any) => [c.id, c]));
+      const favoriteUseCases = ids
+        .map((id: string) => byId.get(id))
+        .filter(Boolean)
+        .map((uc: any) => ({
+          ...uc,
+          industry: uc.category,
+          href: uc.href?.startsWith('#') ? 
+            `https://help.sprinklr.com/hc/en-us/articles/${Math.floor(Math.random() * 1000000000)}-${uc.title.toLowerCase().replace(/\s+/g, '-')}` : 
+            uc.href,
+          image: uc.image?.startsWith('/src/') ? 
+            uc.image.replace('/src/', '/') : 
+            uc.image
         }));
       
-      setFavorites(favoriteUseCases);
+      setFavorites(favoriteUseCases as any);
     } catch (error) {
       console.error('Error fetching favorites:', error);
       toast.error('Failed to load favorites');
@@ -74,7 +83,7 @@ export default function Favourites() {
     if (!user) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('user_favorites')
         .delete()
         .eq('user_id', user.id)
@@ -186,7 +195,7 @@ export default function Favourites() {
             {favorites.map((useCase, index) => (
               <Card 
                 key={useCase.id}
-                className="use-case-card animate-fade-in group cursor-pointer relative"
+                className="use-case-card animate-fade-in group cursor-pointer relative h-full flex flex-col"
                 style={{ animationDelay: `${index * 100}ms` }}
                 onClick={() => handleUseCaseClick(useCase)}
               >
@@ -210,7 +219,7 @@ export default function Favourites() {
                   />
                 </div>
                 
-                <CardContent className="p-6">
+                <CardContent className="p-6 flex flex-col h-full">
                   <h3 className="text-xl font-semibold mb-3 line-clamp-2">
                     {useCase.title}
                   </h3>
@@ -227,8 +236,8 @@ export default function Favourites() {
                       </Badge>
                     ))}
                   </div>
-                  <Button 
-                    className="w-full group" 
+                <Button 
+                    className="w-full group mt-auto" 
                     variant="outline"
                     onClick={(e) => {
                       e.stopPropagation();
