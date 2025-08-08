@@ -71,15 +71,15 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
       if (error) throw error;
       
       // Update use cases with real Sprinklr URLs and fix images
-      const updatedUseCases = (data || []).map(useCase => ({
+      const updatedUseCases = (data || []).map((useCase: any) => ({
         ...useCase,
         industry: useCase.category, // Map category to industry
-        href: useCase.href.startsWith('#') ? 
+        href: useCase.href?.startsWith('#') ? 
           `https://help.sprinklr.com/hc/en-us/articles/${Math.floor(Math.random() * 1000000000)}-${useCase.title.toLowerCase().replace(/\s+/g, '-')}` : 
           useCase.href,
-        image: useCase.image.startsWith('/src/') ? 
-          useCase.image.replace('/src/', '/') : 
-          useCase.image
+        image: useCase.image
+          ? (useCase.image.startsWith('/src/') ? useCase.image.replace('/src/', '/') : useCase.image)
+          : '/placeholder.svg'
       }));
       
       setUseCases(updatedUseCases);
@@ -300,9 +300,10 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                 >
                   <div className="aspect-video overflow-hidden rounded-t-xl">
                     <img
-                      src={useCase.image}
+                      src={useCase.image || '/placeholder.svg'}
                       alt={useCase.title}
                       className="w-full h-full object-cover"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
                     />
                   </div>
                   <CardContent className="p-4 flex flex-col h-full">
@@ -401,11 +402,13 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                       </Button>
                     )}
                     <div className="aspect-video overflow-hidden rounded-t-xl">
-                      <img
-                        src={useCase.image}
-                        alt={useCase.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
+                    <img
+                      src={useCase.image || '/placeholder.svg'}
+                      alt={useCase.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
+                    />
                     </div>
                     <CardContent className="p-6 flex flex-col h-full">
                       <h3 className="text-xl font-semibold mb-3 line-clamp-2">

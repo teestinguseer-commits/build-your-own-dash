@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -23,7 +23,7 @@ export default function Header({
   const navigate = useNavigate();
 
   const navigationItems = [
-    { label: "Use cases", path: "/", active: true },
+    { label: "Use cases", path: "/" },
     { label: "Favourites", path: "/favourites" },
   ];
 
@@ -43,27 +43,28 @@ export default function Header({
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-lg">S</span>
+                <span className="text-primary-foreground font-bold text-sm">UE</span>
               </div>
-              <span className="font-bold text-xl">SaasTool</span>
+              <span className="font-bold text-xl">Use Entity Studio</span>
             </div>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-2">
             {navigationItems.map((item) => (
-              <button
+              <NavLink
                 key={item.label}
-                onClick={() => navigate(item.path)}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  item.active 
-                    ? "text-primary border-b-2 border-primary pb-1" 
-                    : "text-muted-foreground"
-                )}
+                to={item.path}
+                className={({ isActive }) =>
+                  cn(
+                    "text-sm font-medium px-3 py-2 rounded-md transition-colors border-b-2 border-transparent",
+                    isActive ? "text-primary border-primary bg-accent/30" : "text-muted-foreground hover:text-primary"
+                  )
+                }
+                end={item.path === "/"}
               >
                 {item.label}
-              </button>
+              </NavLink>
             ))}
           </nav>
 
@@ -139,18 +140,20 @@ export default function Header({
           <div className="md:hidden border-t">
             <div className="px-2 py-4 space-y-2">
               {navigationItems.map((item) => (
-                <button
+                <NavLink
                   key={item.label}
-                  className={cn(
-                    "block w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                    item.active 
-                      ? "bg-primary text-primary-foreground" 
-                      : "text-muted-foreground hover:text-primary hover:bg-accent"
-                  )}
-                  onClick={() => { navigate(item.path); setIsMobileMenuOpen(false); }}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    cn(
+                      "block w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                      isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-primary hover:bg-accent"
+                    )
+                  }
+                  end={item.path === "/"}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.label}
-                </button>
+                </NavLink>
               ))}
               <div className="pt-4 space-y-2">
                 {user ? (

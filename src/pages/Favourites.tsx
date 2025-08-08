@@ -213,9 +213,11 @@ export default function Favourites() {
                 
                 <div className="aspect-video overflow-hidden rounded-t-xl">
                   <img
-                    src={useCase.image}
+                    src={useCase.image || '/placeholder.svg'}
                     alt={useCase.title}
+                    loading="lazy"
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
                   />
                 </div>
                 
