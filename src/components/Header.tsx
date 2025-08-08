@@ -42,10 +42,10 @@ export default function Header({
           {/* Logo */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg glow-button flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-sm">UE</span>
               </div>
-              <span className="font-bold text-xl">Use Entity Studio</span>
+              <span className="font-bold text-xl gradient-text">Use Entity Studio</span>
             </div>
           </div>
 
@@ -114,8 +114,8 @@ export default function Header({
                 Sign in
               </Button>
             )}
-            <Button size="sm" className="group">
-              Book a demo
+            <Button size="sm" className="group glow-button">
+              Get Started Free
               <ExternalLink className="w-3 h-3 ml-2 transition-transform group-hover:translate-x-0.5" />
             </Button>
           </div>
@@ -210,8 +210,8 @@ export default function Header({
                     Sign in
                   </Button>
                 )}
-                <Button size="sm" className="w-full group">
-                  Book a demo
+                <Button size="sm" className="w-full group glow-button">
+                  Get Started Free
                   <ExternalLink className="w-3 h-3 ml-2 transition-transform group-hover:translate-x-0.5" />
                 </Button>
               </div>

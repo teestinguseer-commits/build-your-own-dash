@@ -248,21 +248,21 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
       />
       {/* Hero Section */}
       <section className="hero-section py-20 px-6">
-        <div className="container mx-auto max-w-6xl text-center">
+        <div className="container mx-auto max-w-6xl text-center relative z-10">
           <div className="flex items-center justify-between mb-8">
             <div className="flex-1">
               <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground animate-fade-in">
-                Sprinklr Use Cases
+                Transform Customer Experience with <span className="gradient-text">Sprinklr</span>
               </h1>
               <p className="text-xl md:text-2xl mb-8 text-muted-foreground max-w-4xl mx-auto animate-fade-in delay-200">
-                Discover how Sprinklr's unified customer experience management platform helps brands 
-                deliver exceptional experiences across all digital touchpoints.
+                Discover powerful use cases and real-world solutions that help leading brands 
+                deliver unified, exceptional customer experiences at scale.
               </p>
             </div>
             {user && showAdminView && (
               <Button 
                 onClick={() => navigate('/admin')}
-                className="gap-2 ml-4"
+                className="gap-2 ml-4 glow-button"
                 size="lg"
               >
                 <Plus className="w-4 h-4" />
@@ -274,7 +274,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
           <div className="relative max-w-2xl mx-auto animate-scale-in delay-400">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <Input
-              placeholder="Search use cases..."
+              placeholder="Search use cases, industries, or solutions..."
               className="search-input pl-12 py-4 text-lg"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -289,13 +289,13 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
           <div className="mb-12">
             <div className="flex items-center gap-2 mb-6">
               <Clock className="w-5 h-5 text-primary" />
-              <h2 className="text-2xl font-bold">Recently Viewed</h2>
+              <h2 className="text-2xl font-bold gradient-text">Continue Where You Left Off</h2>
             </div>
             <div className="flex gap-4 overflow-x-auto pb-4">
               {recentViews.map((useCase) => (
                 <Card 
                   key={`recent-${useCase.id}`}
-                  className="flex-shrink-0 w-80 cursor-pointer hover:shadow-lg transition-all duration-300 h-full flex flex-col"
+                  className="flex-shrink-0 w-80 cursor-pointer use-case-card h-full flex flex-col"
                   onClick={() => handleUseCaseClick(useCase)}
                 >
                   <div className="aspect-video overflow-hidden rounded-t-xl">
@@ -320,14 +320,15 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
           {/* Sidebar Filters */}
           <aside className="lg:w-80 flex-shrink-0">
             <div className="sticky top-6 space-y-6">
+              <div className="glass-card p-6 rounded-xl">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Filters</h2>
+                <h2 className="text-2xl font-bold gradient-text">Refine Your Search</h2>
                 {selectedFilters.length > 0 && (
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={clearAllFilters}
-                    className="text-primary hover:text-primary/80"
+                    className="text-primary hover:text-primary/80 glow-button"
                   >
                     Clear all ({selectedFilters.length})
                   </Button>
@@ -354,14 +355,15 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                   </div>
                 </div>
               ))}
+              </div>
             </div>
           </aside>
 
           {/* Main Content */}
           <main className="flex-1">
             <div className="mb-8">
-              <p className="text-lg text-muted-foreground">
-                {loading ? 'Loading...' : `Showing ${filteredUseCases.length} of ${useCases.length} use cases`}
+              <p className="text-lg text-muted-foreground font-medium">
+                {loading ? 'Loading amazing solutions...' : `Discover ${filteredUseCases.length} powerful use cases ${useCases.length > filteredUseCases.length ? `from ${useCases.length} total solutions` : ''}`}
               </p>
             </div>
 
@@ -369,8 +371,8 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="text-center space-y-4">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                  <p className="text-muted-foreground">Loading use cases...</p>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" style={{boxShadow: 'var(--shadow-glow)'}}></div>
+                  <p className="text-muted-foreground font-medium">Curating the perfect solutions for you...</p>
                 </div>
               </div>
             ) : (
@@ -386,7 +388,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="absolute top-2 right-2 z-10 h-8 w-8 p-0 bg-background/80 hover:bg-background"
+                        className="absolute top-2 right-2 z-10 h-8 w-8 p-0 glass-card hover:bg-background/90"
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleFavorite(useCase.id);
@@ -428,39 +430,39 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                         ))}
                       </div>
                       <Button 
-                        className="w-full group mt-auto" 
-                        variant="outline"
+                        className="w-full group mt-auto glow-button" 
                         onClick={(e) => {
                           e.stopPropagation();
                           handleUseCaseClick(useCase);
                         }}
                       >
-                        Learn more 
+                        Explore Solution
                         <ExternalLink className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                       </Button>
                     </CardContent>
                   </Card>
                 ))}
 
-                <Card className="cta-card col-span-1 md:col-span-2 xl:col-span-3 animate-bounce-in delay-600">
+                <Card className="cta-card col-span-1 md:col-span-2 xl:col-span-3 animate-bounce-in delay-600 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 animate-pulse"></div>
                   <CardContent className="p-8 text-center">
                     <div className="mb-6">
                       <img
                         src={customConsultation}
                         alt="Custom consultation"
-                        className="w-full max-w-md mx-auto rounded-xl opacity-80"
+                        className="w-full max-w-md mx-auto rounded-xl opacity-90 shadow-lg"
                       />
                     </div>
-                    <h3 className="text-2xl font-bold mb-4">
-                      Have a custom use case for Sprinklr?
+                    <h3 className="text-2xl font-bold mb-4 text-white">
+                      Ready to Build Something Amazing?
                     </h3>
-                    <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-                      Let's discuss your specific customer experience requirements and build something amazing together.
-                      Our engineering team is ready to help you create the perfect solution.
+                    <p className="text-white/90 mb-6 max-w-2xl mx-auto text-lg">
+                      Partner with our expert team to create custom solutions tailored to your unique business needs. 
+                      Transform your customer experience with enterprise-grade innovation.
                     </p>
-                    <Button size="lg" className="group">
+                    <Button size="lg" className="group bg-white text-primary hover:bg-white/90 shadow-lg">
                       <MessageSquare className="mr-2 w-5 h-5" />
-                      Talk to our Engineering Team
+                      Start Your Journey
                       <ExternalLink className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </Button>
                   </CardContent>

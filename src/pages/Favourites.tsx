@@ -150,7 +150,7 @@ export default function Favourites() {
 
         <div className="flex items-center gap-3 mb-8">
           <Heart className="w-8 h-8 text-red-500 fill-red-500" />
-          <h1 className="text-4xl font-bold">Your Favorites</h1>
+          <h1 className="text-4xl font-bold gradient-text">Your Curated Collection</h1>
           <Badge variant="secondary" className="text-lg px-3 py-1">
             {favorites.length}
           </Badge>
@@ -158,18 +158,18 @@ export default function Favourites() {
 
         {favorites.length === 0 ? (
           <div className="text-center py-20">
-            <div className="max-w-md mx-auto space-y-6">
+            <div className="max-w-md mx-auto space-y-6 glass-card p-8 rounded-2xl">
               <div className="relative">
                 <Heart className="w-24 h-24 text-muted-foreground/30 mx-auto" />
                 <Sparkles className="w-8 h-8 text-primary absolute -top-2 -right-2 animate-pulse" />
               </div>
               
               <div className="space-y-3">
-                <h2 className="text-2xl font-semibold text-muted-foreground">
-                  No favorites yet
+                <h2 className="text-2xl font-semibold gradient-text">
+                  Your Collection Awaits
                 </h2>
                 <p className="text-muted-foreground">
-                  Start exploring use cases and click the heart icon to save your favorites here.
+                  Discover powerful solutions and save the ones that inspire you. Build your personalized library of game-changing use cases.
                 </p>
               </div>
               
@@ -177,15 +177,15 @@ export default function Favourites() {
                 <Button 
                   onClick={() => navigate('/')}
                   size="lg"
-                  className="gap-2"
+                  className="gap-2 glow-button"
                 >
                   <Sparkles className="w-4 h-4" />
-                  Explore Use Cases
+                  Discover Solutions
                 </Button>
                 
                 <div className="text-sm text-muted-foreground space-y-2">
-                  <p className="font-medium">💡 Pro tip:</p>
-                  <p>Favorited use cases help you quickly access the solutions most relevant to your needs!</p>
+                  <p className="font-medium gradient-text">💡 Pro Tip:</p>
+                  <p>Curate your perfect collection of solutions to accelerate your next breakthrough project!</p>
                 </div>
               </div>
             </div>
@@ -202,7 +202,7 @@ export default function Favourites() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="absolute top-2 right-2 z-10 h-8 w-8 p-0 bg-background/80 hover:bg-background"
+                  className="absolute top-2 right-2 z-10 h-8 w-8 p-0 glass-card hover:bg-background/90"
                   onClick={(e) => {
                     e.stopPropagation();
                     removeFavorite(useCase.id);
@@ -239,14 +239,13 @@ export default function Favourites() {
                     ))}
                   </div>
                 <Button 
-                    className="w-full group mt-auto" 
-                    variant="outline"
+                    className="w-full group mt-auto glow-button" 
                     onClick={(e) => {
                       e.stopPropagation();
                       handleUseCaseClick(useCase);
                     }}
                   >
-                    Learn more 
+                    Explore Solution
                     <ExternalLink className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </Button>
                 </CardContent>

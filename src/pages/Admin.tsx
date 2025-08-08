@@ -199,7 +199,7 @@ export default function Admin() {
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold gradient-text">Content Management Hub</h1>
           <div className="flex gap-2">
             <Button 
               onClick={() => navigate('/')} 
@@ -226,10 +226,10 @@ export default function Admin() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Form */}
-          <Card>
+          <Card className="glass-card">
             <CardHeader>
               <CardTitle>
-                {editingId ? 'Edit Use Case' : 'Add New Use Case'}
+                {editingId ? 'Edit Solution' : 'Create New Solution'}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -302,9 +302,9 @@ export default function Admin() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button type="submit" disabled={submitting}>
+                  <Button type="submit" disabled={submitting} className="glow-button">
                     {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    {editingId ? 'Update' : 'Create'}
+                    {editingId ? 'Update Solution' : 'Create Solution'}
                   </Button>
                   {editingId && (
                     <Button 
@@ -331,14 +331,14 @@ export default function Admin() {
           </Card>
 
           {/* Use Cases List */}
-          <Card>
+          <Card className="glass-card">
             <CardHeader>
               <CardTitle>Existing Use Cases ({useCases.length})</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {useCases.map((useCase) => (
-                  <div key={useCase.id} className="border rounded-lg p-4 space-y-2">
+                  <div key={useCase.id} className="glass-card rounded-lg p-4 space-y-2">
                     <div className="flex justify-between items-start">
                       <h3 className="font-semibold">{useCase.title}</h3>
                       <div className="flex gap-2">
