@@ -371,7 +371,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                       <div key={filterCategory} className="filter-category animate-slide-up mb-6">
                         <h3 className="text-base font-semibold mb-3 capitalize text-foreground flex items-center">
                           <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
-                          {filterCategory === 'industry' ? 'Industries' : filterCategory.replace('-', ' ')}
+                          {filterCategory === 'industry' ? 'Functions' : filterCategory.replace('-', ' ')}
                         </h3>
                         <div className="filter-items space-y-1">
                           {items.map((item) => (
