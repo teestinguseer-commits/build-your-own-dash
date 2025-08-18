@@ -249,7 +249,7 @@ All colors MUST be HSL.
     @apply w-full px-4 py-3 rounded-xl border border-border;
     @apply bg-background/70 backdrop-blur-md;
     @apply focus:outline-none focus:ring-2 focus:ring-primary;
-    @apply placeholder:text-muted-foreground;
+    @apply text-foreground placeholder:text-muted-foreground;
     transition: var(--transition-glow);
     box-shadow: var(--shadow-card);
   }
@@ -257,6 +257,7 @@ All colors MUST be HSL.
   .search-input:focus {
     box-shadow: var(--shadow-glow), var(--shadow-card);
     background: var(--gradient-card);
+    @apply text-foreground;
   }
   
   .cta-card {

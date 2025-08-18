@@ -45,7 +45,7 @@ export default function Header({
               <div className="w-8 h-8 rounded-lg glow-button flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-sm">UE</span>
               </div>
-              <span className="font-bold text-xl gradient-text">Use Entity Studio</span>
+              <span className="font-bold text-xl text-foreground">Use Entity Studio</span>
             </div>
           </div>
 
@@ -106,18 +106,20 @@ export default function Header({
                 </DropdownMenu>
               </>
             ) : (
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigate('/auth')}
-              >
-                Sign in
-              </Button>
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate('/auth')}
+                >
+                  Sign in
+                </Button>
+                <Button size="sm" className="group glow-button">
+                  Get Started Free
+                  <ExternalLink className="w-3 h-3 ml-2 transition-transform group-hover:translate-x-0.5" />
+                </Button>
+              </>
             )}
-            <Button size="sm" className="group glow-button">
-              Get Started Free
-              <ExternalLink className="w-3 h-3 ml-2 transition-transform group-hover:translate-x-0.5" />
-            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -210,10 +212,12 @@ export default function Header({
                     Sign in
                   </Button>
                 )}
-                <Button size="sm" className="w-full group glow-button">
-                  Get Started Free
-                  <ExternalLink className="w-3 h-3 ml-2 transition-transform group-hover:translate-x-0.5" />
-                </Button>
+                {!user && (
+                  <Button size="sm" className="w-full group glow-button">
+                    Get Started Free
+                    <ExternalLink className="w-3 h-3 ml-2 transition-transform group-hover:translate-x-0.5" />
+                  </Button>
+                )}
               </div>
             </div>
           </div>

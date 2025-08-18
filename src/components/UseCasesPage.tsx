@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 import customConsultation from "@/assets/custom-consultation.jpg";
+import ConsultationForm from "@/components/ConsultationForm";
 
 interface UseCase {
   id: string;
@@ -25,7 +26,7 @@ interface UseCase {
 const filters = {
   industry: ["customer-service", "automation", "analytics", "marketing", "engagement"],
   features: ["ai", "real-time", "automation", "collaboration", "reporting"],
-  platforms: ["social-media", "web", "mobile", "api", "chatbots"]
+  tags: [] as string[] // Dynamic tags from use cases
 };
 
 interface UseCasesPageProps {
@@ -50,6 +51,15 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
       fetchRecentViews();
     }
   }, []);
+
+  // Extract unique tags from use cases and update filters
+  useEffect(() => {
+    const allTags = new Set<string>();
+    useCases.forEach(useCase => {
+      useCase.tags.forEach(tag => allTags.add(tag));
+    });
+    filters.tags = Array.from(allTags).sort();
+  }, [useCases]);
 
   useEffect(() => {
     if (user) {
@@ -275,7 +285,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
             <Input
               placeholder="Search use cases, industries, or solutions..."
-              className="search-input pl-12 py-4 text-lg"
+              className="search-input pl-12 py-4 text-lg text-foreground placeholder:text-muted-foreground"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -430,17 +440,22 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                         />
                       </Button>
                     )}
-                    <div className="aspect-video overflow-hidden rounded-t-xl">
+                    <div className="aspect-[4/3] overflow-hidden rounded-t-xl">
                     <img
                       src={useCase.image || '/placeholder.svg'}
                       alt={useCase.title}
                       loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
+                      onError={(e) => { 
+                        const target = e.currentTarget as HTMLImageElement;
+                        if (target.src !== '/placeholder.svg') {
+                          target.src = '/placeholder.svg';
+                        }
+                      }}
                     />
                     </div>
                     <CardContent className="p-6 flex flex-col h-full">
-                      <h3 className="text-lg font-semibold mb-3 leading-tight min-h-[3.5rem] flex items-start">
+                      <h3 className="text-lg font-semibold mb-3 leading-tight min-h-[4rem] flex items-start line-clamp-2">
                         {useCase.title}
                       </h3>
                       <p className="text-muted-foreground mb-4 line-clamp-3">
@@ -487,11 +502,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                       Partner with our expert team to create custom solutions tailored to your unique business needs. 
                       Transform your customer experience with enterprise-grade innovation.
                     </p>
-                    <Button size="lg" className="group bg-white text-primary hover:bg-white/90 shadow-lg">
-                      <MessageSquare className="mr-2 w-5 h-5" />
-                      Start Your Journey
-                      <ExternalLink className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                    </Button>
+                    <ConsultationForm />
                   </CardContent>
                 </Card>
               </div>
