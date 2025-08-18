@@ -290,7 +290,7 @@ All colors MUST be HSL.
   .hero-gradient-text {
     background: linear-gradient(135deg, #f7931e 0%, #8dc63f 25%, #00aeef 60%, #0072bc 100%);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: #FFFFFF;
     background-clip: text;
   }
   
