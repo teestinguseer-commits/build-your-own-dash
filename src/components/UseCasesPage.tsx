@@ -307,7 +307,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                     />
                   </div>
                   <CardContent className="p-4 flex flex-col h-full">
-                    <h3 className="font-semibold mb-2 line-clamp-1">{useCase.title}</h3>
+                    <h3 className="font-semibold mb-2 leading-tight min-h-[2.5rem] flex items-start">{useCase.title}</h3>
                     <p className="text-sm text-muted-foreground line-clamp-2">{useCase.description}</p>
                   </CardContent>
                 </Card>
@@ -320,45 +320,68 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
           {/* Sidebar Filters */}
           <aside className="lg:w-80 flex-shrink-0">
             <div className="sticky top-6 space-y-6">
-              <div className="glass-card rounded-xl">
-              <div className="p-6 pb-4">
-                <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold gradient-text">Refine Your Search</h2>
-                {selectedFilters.length > 0 && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={clearAllFilters}
-                    className="text-primary hover:text-primary/80 glow-button"
-                  >
-                    Clear all ({selectedFilters.length})
-                  </Button>
-                )}
-                </div>
-              </div>
-
-              <div className="sidebar-filters px-6 pb-6">
-                {Object.entries(filters).map(([filterCategory, items]) => (
-                <div key={filterCategory} className="filter-category animate-slide-up">
-                  <h3 className="text-lg font-semibold mb-4 capitalize">
-                    {filterCategory === 'industry' ? 'Industry' : filterCategory.replace('-', ' ')}
-                  </h3>
-                  <div className="filter-items">
-                    {items.map((item) => (
-                      <button
-                        key={item}
-                        onClick={() => toggleFilter(item)}
-                        className={`filter-button w-full text-left text-sm ${
-                          selectedFilters.includes(item) ? 'active' : ''
-                        }`}
+              <div className="glass-card rounded-xl border-2 border-primary/10">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold gradient-text">Refine Your Search</h2>
+                    {selectedFilters.length > 0 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={clearAllFilters}
+                        className="text-primary hover:text-primary/80 glow-button text-xs px-2 py-1"
                       >
-                        {item.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </button>
+                        Clear ({selectedFilters.length})
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Active Filters */}
+                  {selectedFilters.length > 0 && (
+                    <div className="mb-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                      <h4 className="text-sm font-medium text-primary mb-3">Active Filters</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedFilters.map((filter) => (
+                          <Badge 
+                            key={filter} 
+                            variant="secondary" 
+                            className="text-xs cursor-pointer hover:bg-destructive/20 bg-primary/10 text-primary border-primary/30"
+                            onClick={() => toggleFilter(filter)}
+                          >
+                            {filter.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            <span className="ml-1 text-muted-foreground">×</span>
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="sidebar-filters">
+                    {Object.entries(filters).map(([filterCategory, items]) => (
+                      <div key={filterCategory} className="filter-category animate-slide-up mb-6">
+                        <h3 className="text-base font-semibold mb-3 capitalize text-foreground flex items-center">
+                          <div className="w-2 h-2 bg-primary rounded-full mr-2"></div>
+                          {filterCategory === 'industry' ? 'Industries' : filterCategory.replace('-', ' ')}
+                        </h3>
+                        <div className="filter-items space-y-1">
+                          {items.map((item) => (
+                            <button
+                              key={item}
+                              onClick={() => toggleFilter(item)}
+                              className={`filter-button w-full text-left text-sm px-3 py-2 rounded-md transition-all ${
+                                selectedFilters.includes(item) 
+                                  ? 'active bg-primary text-primary-foreground shadow-md' 
+                                  : 'hover:bg-accent/50 text-muted-foreground hover:text-foreground'
+                              }`}
+                            >
+                              {item.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
-                ))}
-              </div>
               </div>
             </div>
           </aside>
@@ -417,7 +440,7 @@ export default function UseCasesPage({ showAdminView = false, onToggleAdminView 
                     />
                     </div>
                     <CardContent className="p-6 flex flex-col h-full">
-                      <h3 className="text-xl font-semibold mb-3 line-clamp-2">
+                      <h3 className="text-lg font-semibold mb-3 leading-tight min-h-[3.5rem] flex items-start">
                         {useCase.title}
                       </h3>
                       <p className="text-muted-foreground mb-4 line-clamp-3">
