@@ -63,7 +63,11 @@ export default function ConsultationForm({ trigger }: ConsultationFormProps) {
   };
 
   const defaultTrigger = (
-    <Button size="lg" className="group bg-white text-primary hover:bg-white/90 shadow-lg">
+    <Button 
+      size="lg" 
+      className="group bg-white text-primary hover:bg-white/90 shadow-lg cursor-pointer z-10 relative"
+      type="button"
+    >
       <MessageSquare className="mr-2 w-5 h-5" />
       Start Your Journey
       <ExternalLink className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
